@@ -1,16 +1,16 @@
 {
-  "name": "electro_react_study",
-  "private": true,
+  "name": "desktop",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./main/electron.js",
   "scripts": {
+    "start:main": "electron ./main/electron.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "react": "18.3.1"
+    "electron": "32.2.5"
   }
 }
