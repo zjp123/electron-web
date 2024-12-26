@@ -1,22 +1,31 @@
 // .eslintrc.js
 module.exports = {
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: "module",
-    ecmaFeatures: {
-      jsx: true,
-    },
-    // project: "./tsconfig.json",
-  },
-  plugins: ["@typescript-eslint", "react", "prettier"],
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "prettier",
-    "plugin:prettier/recommended",
+  ignores: [
+    // List of files or folders to ignore (use glob patterns)
+    "node_modules/",
+    "dist/",
+    ".eslintrc.js", // If you have an old .eslintrc.js file
   ],
+  languageOptions: {
+    parser: "@typescript-eslint/parser",
+    parserOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      ecmaFeatures: {
+        jsx: true,
+      },
+      project: "./tsconfig.json",
+    },
+    plugins: ["@typescript-eslint", "react", "prettier"],
+    extends: [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:react/recommended",
+      "prettier",
+      "plugin:prettier/recommended",
+    ],
+  },
+
   rules: {
     "react/prop-types": "off",
     "prettier/prettier": "error",

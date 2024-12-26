@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main] # 在 push 到 main 和 develop 分支时触发
+  pull_request:
+    branches: [main] # 在创建 pull request 时触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 使用最新的 Ubuntu 系统
+
+    strategy:
+      matrix:
+        node-version: [16, 18, 20] # 使用不同的 Node.js 版本进行测试
+
+    steps:
+      - uses: actions/checkout@v3 # 拉取代码
+      - uses: actions/setup-node@v3 # 设置 Node.js 环境
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest # Or a specific version
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile # 安装依赖，使用 frozen-lockfile 确保一致性
+      - name: Run precommit
+        run: pnpm run precommit # 运行 lint 命令，需要在 package.json 中配置
+      # - name: TypeScript check
+      # run: pnpm run tsc # 运行 TypeScript 检查，需要在 package.json 中配置
+      # - name: Run tests
+      # run: pnpm run test # 运行测试命令，需要在 package.json 中配置
+      - name: Commitlint
+        uses: wagoid/commitlint-github-action@v5
+        with:
+          config: "@commitlint/config-conventional"
