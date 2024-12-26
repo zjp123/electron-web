@@ -109,7 +109,13 @@ importers:
         specifier: 32.2.5
         version: 32.2.5
 
-  apps/web: {}
+  apps/web:
+    dependencies:
+      '@zjp-web/common':
+        specifier: workspace:^
+        version: link:../../packages/zjp-common
+
+  packages/zjp-common: {}
 
 packages:
 

@@ -35,6 +35,7 @@
       // "./assets/*": [
       //   "*"
       // ]
+      "@root/*": ["./*"]
     },
     "sourceMap": true,
     "outDir": "dist"

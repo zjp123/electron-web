@@ -1,0 +1,23 @@
+#root {
+  height: 100%;
+  width: 100vw;
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  height: 100vh !important;
+
+  /* mobile viewport bug fix */
+  max-height: -webkit-fill-available;
+  max-height: -moz-fill-available;
+  max-height: -moz-available; /* FireFox目前这个生效 */
+  max-height: stretch;
+
+  min-height: -webkit-fill-available;
+  min-height: -moz-fill-available;
+  min-height: -moz-available; /* FireFox目前这个生效 */
+  min-height: stretch;
+}

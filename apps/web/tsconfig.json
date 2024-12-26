@@ -1,0 +1,51 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@assets/*": ["../../assets/*"],
+      // "@zjp-web/models/*": [
+      //   "../../packages/zjp-web-models/src/*"
+      // ],
+      // "@zjp-web/api/*": [
+      //   "./../packages/zjp-web-api/src/*"
+      // ],
+      "@zjp-web/components/*": ["./../packages/zjp-web-components/src/*"],
+      "@zjp-web/react-hooks/*": ["./../packages/zjp-web-react-hooks/src/*"],
+
+      // "@zjp-web/auth/*": [
+      //   "./../packages/zjp-web-auth/src/*"
+      // ],
+      // "@zjp-web/service/*": [
+      //   "./../packages/zjp-web-service/src/*"
+      // ],
+      "@zjp-web/common/*": ["../../packages/zjp-common/*"],
+      "@zjp-web/i18n/*": ["../../packages/zjp-i18n/*"]
+    },
+    /* Bundler mode */
+    "moduleResolution": "Bundler",
+    // "moduleResolution": "Node10",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src", "global.d.ts"],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}
