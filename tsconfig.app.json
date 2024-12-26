@@ -1,0 +1,45 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // 根据需要调整
+    "module": "esnext",
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    // "paths": {
+    //         "@/*": ["src/*"]
+    //   }
+    // "paths": {
+    //     "@components/*": ["./src/components/*"],
+    //     "@pages/*": ["./src/pages/*"],
+    //     "@utils/*": ["./src/utils/*"],
+    //     "@assets/*": [".src/assets/*"],
+    // },
+    "paths": {
+      // "@ghost-web/models/*": ["packages/ghost-web-models/src/*"],
+      // "@ghost-web/api/*": ["packages/ghost-web-api/src/*"],
+      // "@ghost-web/components/*": ["packages/ghost-web-components/src/*"],
+      // "@ghost-web/react-hooks/*": ["packages/ghost-web-react-hooks/src/*"],
+      // "@ghost-web/lib/*": ["packages/ghost-web-lib/src/*"],
+      // "@ghost-web/auth/*": ["packages/ghost-web-auth/src/*"],
+      // "@ghost-web/service/*": ["packages/ghost-web-service/src/*"],
+      // "@ghost-web/common/*": ["packages/ghost-web-common/*"],
+      // "@root/*": [
+      //   "./*"
+      // ],
+      // "./assets/*": [
+      //   "*"
+      // ]
+    },
+    "sourceMap": true,
+    "outDir": "dist"
+  },
+  // "include": ["src"],
+  "include": ["packages/**/*.ts", "packages/**/*.tsx", "global.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}
