@@ -1,5 +1,10 @@
 // .eslintrc.js
 module.exports = {
+  env: {
+    node: true, // 添加这一行以启用 Node.js 环境
+    browser: true,
+    es2020: true,
+  },
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2020,
