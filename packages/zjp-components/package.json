@@ -1,5 +1,5 @@
 {
-  "name": "@zjp-web/common",
+  "name": "@zjp-web/components",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@zjp-web/components": "workspace:^"
+    "antd": "^5.22.7"
   }
 }

@@ -16,7 +16,10 @@ const App = () => {
           (route: RouteConfig & { componentName: string }) => ({
             path: route.path,
             component: React.lazy(
-              () => import(`./pages/${route.componentName}`),
+              () =>
+                import(
+                  `../../../packages/zjp-common//pages/${route.componentName}`
+                ),
             ),
             isProtected: route.isProtected,
           }),
