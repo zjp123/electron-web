@@ -28,22 +28,14 @@ interface Window {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   waker: {
     getState: () => Promise<WakerCommonRes<CurrentDeviceState>>;
-    onConnect(
-      cb: (data: WakerCommonRes<CurrentDeviceState>) => void,
-    ): () => void;
+    onConnect(cb: (data: WakerCommonRes<CurrentDeviceState>) => void): () => void;
     getWiFiList(): Promise<WakerCommonRes>;
-    connectWiFi(
-      ssid: string,
-      capabilities: string,
-      password?: string,
-    ): Promise<WakerCommonRes>;
+    connectWiFi(ssid: string, capabilities: string, password?: string): Promise<WakerCommonRes>;
     getSavedWifiList(): Promise<WakerCommonRes>;
     delSavedWifi(ssid: string): Promise<WakerCommonRes>;
     ota(file: ArrayBuffer): Promise<WakerCommonRes>;
     otaProgress(
-      cb: (
-        data: WakerCommonRes<{ step: string; progress: number; desc: string }>,
-      ) => void,
+      cb: (data: WakerCommonRes<{ step: string; progress: number; desc: string }>) => void
     ): () => void;
   };
   browserWindowName: string | null;

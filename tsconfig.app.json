@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext", // 根据需要调整
-    "module": "esnext",
+    "module": "ESNext",
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
     "jsx": "react-jsx",
     "strict": true,

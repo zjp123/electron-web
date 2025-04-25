@@ -29,7 +29,7 @@ export default defineConfig(() => {
           target: "http://localhost:8080", // 代理目标地址，从环境变量中读取
           // target: env.VITE_API_BASE_URL || "http://localhost:8080", // 代理目标地址，从环境变量中读取
           changeOrigin: true, // 允许跨域
-          rewrite: (path) => path.replace(/^\/api/, ""), // 重写路径，去除 /api 前缀
+          rewrite: path => path.replace(/^\/api/, ""), // 重写路径，去除 /api 前缀
         },
       },
     },
@@ -86,9 +86,7 @@ export default defineConfig(() => {
     },
     define: {
       // 定义全局常量，例如版本号
-      "process.env.VITE_APP_VERSION": JSON.stringify(
-        process.env.npm_package_version,
-      ),
+      "process.env.VITE_APP_VERSION": JSON.stringify(process.env.npm_package_version),
     },
     optimizeDeps: {
       include: ["react", "react-dom"], // 强制预构建依赖

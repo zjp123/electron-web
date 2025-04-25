@@ -12,18 +12,13 @@ const App = () => {
     const loadDynamicRoutes = async () => {
       try {
         const routes = await fetchDynamicRoutes();
-        const formattedRoutes = routes.map(
-          (route: RouteConfig & { componentName: string }) => ({
-            path: route.path,
-            component: React.lazy(
-              () =>
-                import(
-                  `../../../packages/zjp-common//pages/${route.componentName}`
-                ),
-            ),
-            isProtected: route.isProtected,
-          }),
-        ) as RouteConfig[];
+        const formattedRoutes = routes.map((route: RouteConfig & { componentName: string }) => ({
+          path: route.path,
+          component: React.lazy(
+            () => import(`../../../packages/zjp-common//pages/${route.componentName}`)
+          ),
+          isProtected: route.isProtected,
+        })) as RouteConfig[];
         setDynamicRoutes(formattedRoutes);
       } catch (error) {
         console.error("Error loading dynamic routes:", error);
@@ -37,23 +32,21 @@ const App = () => {
     <BrowserRouter>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          {[...basicRoutes, ...dynamicRoutes].map(
-            ({ path, component: Component, isProtected }) => (
-              <Route
-                key={path}
-                path={path}
-                element={
-                  isProtected ? (
-                    <ProtectedRoute>
-                      <Component />
-                    </ProtectedRoute>
-                  ) : (
+          {[...basicRoutes, ...dynamicRoutes].map(({ path, component: Component, isProtected }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                isProtected ? (
+                  <ProtectedRoute>
                     <Component />
-                  )
-                }
-              />
-            ),
-          )}
+                  </ProtectedRoute>
+                ) : (
+                  <Component />
+                )
+              }
+            />
+          ))}
         </Routes>
       </Suspense>
     </BrowserRouter>

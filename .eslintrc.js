@@ -25,6 +25,7 @@ module.exports = {
   rules: {
     "react/prop-types": "off",
     "prettier/prettier": "error",
+    singleQuote: "off",
   },
   settings: {
     react: {
