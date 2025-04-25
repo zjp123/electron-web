@@ -15,7 +15,7 @@ const App = () => {
         const formattedRoutes = routes.map((route: RouteConfig & { componentName: string }) => ({
           path: route.path,
           component: React.lazy(
-            () => import(`../../../packages/zjp-common//pages/${route.componentName}`)
+            () => import(`../../../packages/zjp-common/pages/${route.componentName}.tsx`)
           ),
           isProtected: route.isProtected,
         })) as RouteConfig[];

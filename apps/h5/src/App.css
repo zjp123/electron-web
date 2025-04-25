@@ -1,0 +1,57 @@
+/* 移动端应用样式 */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background-color: #f5f5f5;
+}
+
+.app-header {
+  padding: 1rem;
+  background-color: #1677ff;
+  color: white;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.app-content {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-footer {
+  padding: 1rem;
+  background-color: #f0f0f0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #666;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* 移动端适配 */
+@media (max-width: 576px) {
+  .app-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .app-content {
+    padding: 0.75rem;
+  }
+
+  .app-footer {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+  }
+}

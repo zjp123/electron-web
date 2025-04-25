@@ -1,8 +1,7 @@
-/**
- * @desc electron 主入口
- */
-const path = require('path');
-const { app, BrowserWindow } = require('electron');
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-var-requires */
+// const path = require("path");
+const { app, BrowserWindow } = require("electron");
 
 function createWindow() {
   // 创建浏览器窗口
@@ -14,12 +13,12 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile("index.html");
 }
 
 app.whenReady().then(() => {
   createWindow();
-  app.on('activate', function () {
+  app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });

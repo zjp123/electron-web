@@ -1,6 +1,7 @@
 #root {
   height: 100%;
-  width: 100vw;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 html {
@@ -16,8 +17,8 @@ body {
   max-height: -moz-available; /* FireFox目前这个生效 */
   max-height: stretch;
 
-  min-height: -webkit-fill-available;
+  /* min-height: -webkit-fill-available;
   min-height: -moz-fill-available;
-  min-height: -moz-available; /* FireFox目前这个生效 */
+  min-height: -moz-available;  */
   min-height: stretch;
 }

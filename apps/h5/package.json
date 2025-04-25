@@ -1,0 +1,39 @@
+{
+  "name": "zjp-h5",
+  "version": "1.0.0",
+  "description": "移动端H5应用",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
+  },
+  "exports": {
+    "./*": [
+      "./*",
+      "./*.ts",
+      "./*.tsx",
+      "./*/index.ts",
+      "./*/index.tsx"
+    ]
+  },
+  "keywords": [
+    "mobile",
+    "h5"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@zjp-web/common": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "postcss-preset-env": "^9.1.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}
