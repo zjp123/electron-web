@@ -1,20 +1,11 @@
 {
-  "extends": [
-    "stylelint-config-standard",
-    "stylelint-config-styled-components"
-  ],
-  "processors": ["stylelint-processor-styled-components"],
+  "extends": ["stylelint-config-recommended", "stylelint-config-styled-components"],
+  "customSyntax": "postcss-jsx",
   "rules": {
     "at-rule-no-unknown": [
       true,
       {
-        "ignoreAtRules": [
-          "tailwind",
-          "apply",
-          "variants",
-          "responsive",
-          "screen"
-        ]
+        "ignoreAtRules": ["tailwind", "apply", "variants", "responsive", "screen"]
       }
     ],
     "declaration-block-trailing-semicolon": null,

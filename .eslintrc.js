@@ -24,6 +24,7 @@ module.exports = {
     "react/prop-types": "off",
     "prettier/prettier": "error",
     singleQuote: "off",
+    "@typescript-eslint/no-explicit-any": "off",
   },
   settings: {
     react: {

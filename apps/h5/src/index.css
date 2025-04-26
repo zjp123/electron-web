@@ -5,34 +5,48 @@
 }
 
 html,
-body {
+body,
+#root {
+  height: 100%;
+  width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
     "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 16px;
 }
 
-#root {
-  width: 100%;
-  height: 100%;
+/* 防止iOS点击闪烁 */
+a,
+button,
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 移动端适配 */
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   html {
     font-size: 16px;
   }
 }
 
-/* 移动端点击高亮去除 */
-a,
-button,
-input,
-select,
-textarea,
-div {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+@media screen and (max-width: 414px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  html {
+    font-size: 13px;
+  }
 }
