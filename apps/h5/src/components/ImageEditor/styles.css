@@ -54,3 +54,28 @@
 .image-editor-footer button {
   flex: 1;
 }
+
+/* 滤镜选项样式 */
+.filter-options {
+  margin-top: 8px;
+}
+
+.filter-option {
+  padding: 6px 4px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  transition: all 0.2s;
+  background-color: rgb(255 255 255 / 10%);
+  cursor: pointer;
+}
+
+.filter-option:hover {
+  background-color: rgb(255 255 255 / 20%);
+}
+
+.filter-option-active {
+  background-color: rgb(255 255 255 / 30%);
+  font-weight: bold;
+}

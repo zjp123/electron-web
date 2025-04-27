@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from "react-image-crop";
-import { Button, Slider, Toast } from "antd-mobile";
+import { Button, Slider, Toast, Grid } from "antd-mobile";
 import "react-image-crop/dist/ReactCrop.css";
 import "./styles.css";
 
@@ -10,12 +10,47 @@ interface ImageEditorProps {
   onConfirm: (editedImage: File) => void;
 }
 
+// 定义滤镜类型
+type FilterType = "none" | "grayscale" | "sepia" | "invert" | "blur" | "brightness" | "contrast";
+
+// 滤镜选项
+const filterOptions: { type: FilterType; label: string }[] = [
+  { type: "none", label: "原图" },
+  { type: "grayscale", label: "灰度" },
+  { type: "sepia", label: "复古" },
+  { type: "invert", label: "反色" },
+  { type: "blur", label: "模糊" },
+  { type: "brightness", label: "明亮" },
+  { type: "contrast", label: "对比度" },
+];
+
+// 获取滤镜CSS样式
+const getFilterStyle = (filter: FilterType): string => {
+  switch (filter) {
+    case "grayscale":
+      return "grayscale(100%)";
+    case "sepia":
+      return "sepia(100%)";
+    case "invert":
+      return "invert(100%)";
+    case "blur":
+      return "blur(4px)";
+    case "brightness":
+      return "brightness(130%)";
+    case "contrast":
+      return "contrast(150%)";
+    default:
+      return "none";
+  }
+};
+
 const ImageEditor: React.FC<ImageEditorProps> = ({ imageFile, onCancel, onConfirm }) => {
   const [crop, setCrop] = useState<Crop>();
   const [rotation, setRotation] = useState(0);
   const [scale, setScale] = useState(1);
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [imageSrc, setImageSrc] = useState<string>("");
+  const [filter, setFilter] = useState<FilterType>("none");
   const imgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -59,7 +94,78 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageFile, onCancel, onConfir
     setCrop(crop);
   };
 
-  // 应用旋转和缩放到画布
+  // 应用滤镜效果
+  const applyFilter = (ctx: CanvasRenderingContext2D, filter: FilterType) => {
+    if (filter === "none") return;
+
+    const canvas = ctx.canvas;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    switch (filter) {
+      case "grayscale": {
+        // 灰度滤镜
+        for (let i = 0; i < data.length; i += 4) {
+          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          data[i] = avg; // 红
+          data[i + 1] = avg; // 绿
+          data[i + 2] = avg; // 蓝
+        }
+        break;
+      }
+      case "sepia": {
+        // 复古滤镜
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          data[i] = Math.min(255, r * 0.393 + g * 0.769 + b * 0.189);
+          data[i + 1] = Math.min(255, r * 0.349 + g * 0.686 + b * 0.168);
+          data[i + 2] = Math.min(255, r * 0.272 + g * 0.534 + b * 0.131);
+        }
+        break;
+      }
+      case "invert": {
+        // 反色滤镜
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = 255 - data[i]; // 红
+          data[i + 1] = 255 - data[i + 1]; // 绿
+          data[i + 2] = 255 - data[i + 2]; // 蓝
+        }
+        break;
+      }
+      case "blur": {
+        // 简单模糊效果（这里使用CSS滤镜更高效）
+        ctx.filter = "blur(4px)";
+        ctx.drawImage(canvas, 0, 0);
+        ctx.filter = "none";
+        return; // 直接返回，不需要putImageData
+      }
+      case "brightness": {
+        // 增加亮度
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = Math.min(255, data[i] * 1.3);
+          data[i + 1] = Math.min(255, data[i + 1] * 1.3);
+          data[i + 2] = Math.min(255, data[i + 2] * 1.3);
+        }
+        break;
+      }
+      case "contrast": {
+        // 增加对比度
+        const factor = (259 * (100 + 50)) / (255 * (259 - 50));
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = Math.min(255, Math.max(0, factor * (data[i] - 128) + 128));
+          data[i + 1] = Math.min(255, Math.max(0, factor * (data[i + 1] - 128) + 128));
+          data[i + 2] = Math.min(255, Math.max(0, factor * (data[i + 2] - 128) + 128));
+        }
+        break;
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  };
+
+  // 应用旋转、缩放和滤镜到画布
   const applyTransformToCanvas = () => {
     if (!imgRef.current || !canvasRef.current || !completedCrop) return;
 
@@ -105,6 +211,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageFile, onCancel, onConfir
       completedCrop.width * scaleX,
       completedCrop.height * scaleY
     );
+
+    // 应用滤镜
+    applyFilter(ctx, filter);
 
     // 恢复状态
     ctx.restore();
@@ -164,6 +273,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageFile, onCancel, onConfir
                 transform: `rotate(${rotation}deg) scale(${scale})`,
                 maxHeight: "300px",
                 maxWidth: "100%",
+                filter: getFilterStyle(filter),
               }}
               onLoad={onImageLoad}
             />
@@ -182,6 +292,24 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageFile, onCancel, onConfir
         <div className="control-group">
           <div className="control-label">缩放</div>
           <Slider min={0.5} max={2} step={0.1} value={scale} onChange={setScale} />
+        </div>
+
+        <div className="control-group">
+          <div className="control-label">滤镜</div>
+          <div className="filter-options">
+            <Grid columns={4} gap={8}>
+              {filterOptions.map(option => (
+                <Grid.Item key={option.type}>
+                  <div
+                    className={`filter-option ${filter === option.type ? "filter-option-active" : ""}`}
+                    onClick={() => setFilter(option.type)}
+                  >
+                    {option.label}
+                  </div>
+                </Grid.Item>
+              ))}
+            </Grid>
+          </div>
         </div>
       </div>
 
