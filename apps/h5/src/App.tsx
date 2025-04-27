@@ -1,3 +1,4 @@
+// @ts-expect-error React is needed for JSX but marked as unused
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.less";

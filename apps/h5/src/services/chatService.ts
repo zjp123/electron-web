@@ -32,7 +32,6 @@ const imageAnalysisResponses = [
 // Markdown示例回复
 const markdownResponses = [
   `# Markdown 示例
-这是一个**加粗文本**和*斜体文本*的例子。
 
 ## 代码示例
 \`\`\`javascript
@@ -49,7 +48,7 @@ function hello() {
 | 李四 | 30 | 上海 |
 | 王五 | 28 | 广州 |
 
-更多信息请查看[Markdown文档](https://www.markdown.com)`,
+`,
 
   `## 数据分析报告
 根据您提供的信息，我做了如下分析：
@@ -145,7 +144,7 @@ class ChatService {
 
   // 发送图片
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async sendImage(imageFile: File): Promise<Message> {
+  async sendImage(_imageFile: File): Promise<Message> {
     // 这里应该是上传图片的逻辑，返回图片URL
     // 这里只是模拟
     return new Promise(resolve => {
