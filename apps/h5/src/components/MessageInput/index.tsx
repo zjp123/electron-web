@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Input, Button, Toast } from "antd-mobile";
 import { SendOutline, PictureOutline, AudioOutline } from "antd-mobile-icons";
+import ImageEditor from "../ImageEditor";
+import "react-image-crop/dist/ReactCrop.css";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
@@ -63,6 +65,8 @@ declare global {
 const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendImage }) => {
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [showImageEditor, setShowImageEditor] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -165,10 +169,9 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendImage 
       return;
     }
 
-    // 调用父组件回调函数
-    if (onSendImage) {
-      onSendImage(file);
-    }
+    // 设置选中的图片并显示图片编辑器
+    setSelectedImage(file);
+    setShowImageEditor(true);
 
     // 清空文件输入，以便可以重新选择同一文件
     if (fileInputRef.current) {
@@ -176,8 +179,32 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendImage 
     }
   };
 
+  // 处理图片编辑取消
+  const handleCancelEdit = () => {
+    setShowImageEditor(false);
+    setSelectedImage(null);
+  };
+
+  // 处理图片编辑完成
+  const handleConfirmEdit = (editedImage: File) => {
+    setShowImageEditor(false);
+    setSelectedImage(null);
+
+    // 调用父组件回调函数发送编辑后的图片
+    if (onSendImage) {
+      onSendImage(editedImage);
+    }
+  };
+
   return (
     <div className="message-input-container">
+      {showImageEditor && selectedImage && (
+        <ImageEditor
+          imageFile={selectedImage}
+          onCancel={handleCancelEdit}
+          onConfirm={handleConfirmEdit}
+        />
+      )}
       <input
         type="file"
         accept="image/*"
