@@ -43,6 +43,7 @@
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "postcss-preset-env": "^10.1.5",
+    "terser": "^5.39.0",
     "typescript": "^5.0.2",
     "vite-plugin-stylelint": "^5.3.1"
   }
