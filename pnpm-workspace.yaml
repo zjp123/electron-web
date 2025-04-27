@@ -3,3 +3,5 @@ packages:
   - "packages/**"
 nohoist:
   - "electron"
+
+  # nohoist防止某些依赖被提升至顶层node_modules目录
