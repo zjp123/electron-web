@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
       react(),
       stylelint({
         fix: true,
-        include: ["src/**/*.{tsx,less,css}"],
+        include: ["src/**/*.{less,css}"],
+        exclude: ["src/**/*.{ts,tsx,js,jsx}"],
       }),
     ],
     resolve: {
