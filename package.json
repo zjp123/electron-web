@@ -68,7 +68,7 @@
     "husky": "^8.0.0",
     "lint-staged": "^15.2.11",
     "prettier": "^3.4.2",
-    "vite": "^6.0.6",
+    "vite": "^6.2.1",
     "vite-tsconfig-paths": "^5.1.4",
     "stylelint": "^16.17.0",
     "stylelint-config-recommended-less": "^3.0.1",

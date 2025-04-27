@@ -1,0 +1,130 @@
+/* 移动端应用样式 */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fff;
+
+  &-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    color: #333;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 1px 0 rgb(0 0 0 / 5%);
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .header-left,
+    .header-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 16px;
+    padding-bottom: 80px; // Consider if this should be relative to toolbar height
+    overflow-y: auto;
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .chat-welcome {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      text-align: center;
+
+      &-icon {
+        /* width: 80px;
+        height: 80px; */
+        margin-bottom: 20px;
+      }
+
+      &-title {
+        margin-bottom: 16px;
+        font-size: 22px;
+        font-weight: 600;
+      }
+
+      &-subtitle {
+        color: #666;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+    }
+  }
+
+  &-footer {
+    padding: 1rem;
+    color: #666;
+    font-size: 0.875rem;
+    text-align: center;
+    background-color: #f0f0f0;
+    border-top: 1px solid #e0e0e0;
+  }
+}
+
+// Separate components/layouts
+.message-input-container {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #fff;
+  box-shadow: 0 -1px 0 rgb(0 0 0 / 5%);
+}
+
+.toolbar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 16px;
+  background-color: #fff;
+  border-top: 1px solid #f0f0f0;
+
+  &-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #666;
+    font-size: 12px;
+
+    &.active {
+      color: #4e6ef2;
+    }
+  }
+
+  &-icon {
+    margin-bottom: 4px;
+    font-size: 24px;
+  }
+}

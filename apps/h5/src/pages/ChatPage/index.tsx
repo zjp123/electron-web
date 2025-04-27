@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavBar, Dialog, Popup, Image } from "antd-mobile";
 import { UnorderedListOutline, AddCircleOutline } from "antd-mobile-icons";
-import "../../App.css";
+import "../../App.less";
 
 import ChatWelcome from "../../components/ChatWelcome";
 import ChatMessage from "../../components/ChatMessage";
