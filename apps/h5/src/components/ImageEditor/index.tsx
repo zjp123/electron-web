@@ -147,7 +147,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({ imageFile, onCancel, onConfir
       <div className="image-editor-header">
         <h3>编辑图片</h3>
       </div>
-
       <div className="image-editor-content">
         {imageSrc && (
           <ReactCrop
