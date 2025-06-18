@@ -73,13 +73,17 @@ const ChatPage: React.FC = () => {
   };
 
   // 更新当前对话的消息
-  const updateCurrentConversationMessages = (messages: Message[]) => {
-    setConversations(
-      conversations.map(conv =>
-        conv.id === activeConversationId
-          ? { ...conv, messages, title: getConversationTitle(messages) }
-          : conv
-      )
+  const updateCurrentConversationMessages = (
+    getNewMessages: (prevMessages: Message[]) => Message[]
+  ) => {
+    setConversations(prevConversations =>
+      prevConversations.map(conv => {
+        if (conv.id === activeConversationId) {
+          const newMessages = getNewMessages(conv.messages);
+          return { ...conv, messages: newMessages, title: getConversationTitle(newMessages) };
+        }
+        return conv;
+      })
     );
   };
 
@@ -136,68 +140,170 @@ const ChatPage: React.FC = () => {
       type: "text",
     };
 
-    const updatedMessages = [...currentConversation.messages, userMessage];
-    updateCurrentConversationMessages(updatedMessages);
+    // 添加用户消息
+    updateCurrentConversationMessages(prevMessages => [...prevMessages, userMessage]);
 
-    // 设置加载状态
+    // 设置加载状态并添加空的机器人消息
     setIsLoading(true);
+    const botMessagePlaceholder: Message = {
+      content: "", // 初始为空，用于打字机效果
+      isBot: true,
+      type: "text",
+    };
+    updateCurrentConversationMessages(prevMessages => [...prevMessages, botMessagePlaceholder]);
 
     try {
-      // 调用聊天服务
-      const response = await chatService.sendMessage(message);
-      const newMessages = [...updatedMessages, response];
-      updateCurrentConversationMessages(newMessages);
+      // 调用聊天服务，传递打字机效果回调
+      const response = await chatService.sendMessage(message, (chunk: string) => {
+        setConversations(prevConversations =>
+          prevConversations.map(conv => {
+            if (conv.id === activeConversationId && conv.messages.length > 0) {
+              const newMessages = [...conv.messages];
+              const lastMessageIndex = newMessages.length - 1;
+              const lastMessage = newMessages[lastMessageIndex];
+              if (lastMessage.isBot) {
+                newMessages[lastMessageIndex] = {
+                  ...lastMessage,
+                  content: lastMessage.content + chunk,
+                };
+                return { ...conv, messages: newMessages, title: getConversationTitle(newMessages) };
+              }
+            }
+            return conv;
+          })
+        );
+      });
+
+      // 流式输出完成后，确保最终内容正确
+      setConversations(prevConversations =>
+        prevConversations.map(conv => {
+          if (conv.id === activeConversationId && conv.messages.length > 0) {
+            const newMessages = [...conv.messages];
+            const lastMessageIndex = newMessages.length - 1;
+            const lastMessage = newMessages[lastMessageIndex];
+            if (lastMessage.isBot) {
+              newMessages[lastMessageIndex] = {
+                ...lastMessage,
+                content: response.content, // 使用完整的响应内容
+              };
+              return { ...conv, messages: newMessages, title: getConversationTitle(newMessages) };
+            }
+          }
+          return conv;
+        })
+      );
     } catch (error) {
       console.error("发送消息失败:", error);
-      // 添加错误消息
-      const errorMessage: Message = {
-        content: "抱歉，发生了一些错误，请稍后再试。",
-        isBot: true,
-        type: "text",
-      };
-      const errorMessages = [...updatedMessages, errorMessage];
-      updateCurrentConversationMessages(errorMessages);
+      // 替换最后的机器人消息为错误消息
+      setConversations(prevConversations =>
+        prevConversations.map(conv => {
+          if (conv.id === activeConversationId && conv.messages.length > 0) {
+            const newMessages = [...conv.messages];
+            const lastMessageIndex = newMessages.length - 1;
+            // 确保我们正在修改的是机器人占位消息或流式消息
+            if (newMessages[lastMessageIndex].isBot) {
+              newMessages[lastMessageIndex] = {
+                content: "抱歉，发生了一些错误，请稍后再试。",
+                isBot: true,
+                type: "text",
+              };
+              return { ...conv, messages: newMessages, title: getConversationTitle(newMessages) };
+            }
+          }
+          return conv;
+        })
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSendImage = async (image: File) => {
-    const currentConversation = getCurrentConversation();
-    if (!currentConversation) return;
+  const handleSendImage = async (image: File, prompt?: string) => {
+    const currentConv = getCurrentConversation(); // Renamed to avoid conflict with outer scope variable
+    if (!currentConv) return;
 
     // 创建本地预览URL
     const imageUrl = URL.createObjectURL(image);
 
-    // 添加用户图片消息
+    // 添加用户图片消息，如果有自定义prompt则显示
     const imageMessage: Message = {
-      content: "用户发送了一张图片",
+      content: prompt || "用户发送了一张图片",
       isBot: false,
       type: "image",
       imageUrl,
     };
 
-    const updatedMessages = [...currentConversation.messages, imageMessage];
-    updateCurrentConversationMessages(updatedMessages);
+    updateCurrentConversationMessages(prevMessages => [...prevMessages, imageMessage]);
 
-    // 设置加载状态
+    // 设置加载状态并添加空的机器人消息
     setIsLoading(true);
+    const botMessagePlaceholder: Message = {
+      content: "", // 初始为空，用于打字机效果
+      isBot: true,
+      type: "text",
+    };
+    updateCurrentConversationMessages(prevMessages => [...prevMessages, botMessagePlaceholder]);
 
     try {
-      // 调用聊天服务发送图片
-      const response = await chatService.sendImage(image);
-      const newMessages = [...updatedMessages, response];
-      updateCurrentConversationMessages(newMessages);
+      // 调用聊天服务发送图片，传递打字机效果回调
+      const response = await chatService.sendImage(image, prompt, (chunk: string) => {
+        setConversations(prevConversations =>
+          prevConversations.map(conv => {
+            if (conv.id === activeConversationId && conv.messages.length > 0) {
+              const newMessages = [...conv.messages];
+              const lastMessageIndex = newMessages.length - 1;
+              const lastMessage = newMessages[lastMessageIndex];
+              if (lastMessage.isBot) {
+                newMessages[lastMessageIndex] = {
+                  ...lastMessage,
+                  content: lastMessage.content + chunk,
+                };
+                return { ...conv, messages: newMessages, title: getConversationTitle(newMessages) };
+              }
+            }
+            return conv;
+          })
+        );
+      });
+
+      // 流式输出完成后，确保最终内容正确
+      setConversations(prevConversations =>
+        prevConversations.map(conv => {
+          if (conv.id === activeConversationId && conv.messages.length > 0) {
+            const newMessages = [...conv.messages];
+            const lastMessageIndex = newMessages.length - 1;
+            const lastMessage = newMessages[lastMessageIndex];
+            if (lastMessage.isBot) {
+              newMessages[lastMessageIndex] = {
+                ...lastMessage,
+                content: response.content, // 使用完整的响应内容
+              };
+              return { ...conv, messages: newMessages, title: getConversationTitle(newMessages) };
+            }
+          }
+          return conv;
+        })
+      );
     } catch (error) {
       console.error("处理图片失败:", error);
-      // 添加错误消息
-      const errorMessage: Message = {
-        content: "抱歉，处理图片时发生了错误，请稍后再试。",
-        isBot: true,
-        type: "text",
-      };
-      const errorMessages = [...updatedMessages, errorMessage];
-      updateCurrentConversationMessages(errorMessages);
+      // 替换最后的机器人消息为错误消息
+      setConversations(prevConversations =>
+        prevConversations.map(conv => {
+          if (conv.id === activeConversationId && conv.messages.length > 0) {
+            const newMessages = [...conv.messages];
+            const lastMessageIndex = newMessages.length - 1;
+            if (newMessages[lastMessageIndex].isBot) {
+              newMessages[lastMessageIndex] = {
+                content: "抱歉，处理图片时发生了错误，请稍后再试。",
+                isBot: true,
+                type: "text",
+              };
+              return { ...conv, messages: newMessages, title: getConversationTitle(newMessages) };
+            }
+          }
+          return conv;
+        })
+      );
     } finally {
       setIsLoading(false);
     }

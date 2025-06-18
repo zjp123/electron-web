@@ -22,6 +22,6 @@
       "@zjp-web/common/*": ["../../packages/zjp-common/*"]
     }
   },
-  "include": ["src", "global.d.ts"],
+  "include": ["src", "global.d.ts", "src/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

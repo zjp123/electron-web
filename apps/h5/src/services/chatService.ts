@@ -1,3 +1,5 @@
+import OpenAI from "openai";
+
 // Define message types
 export interface Message {
   content: string;
@@ -12,67 +14,12 @@ export interface Conversation {
   messages: Message[];
 }
 
-// Mock responses for different types of questions
-const mockResponses = [
-  "我是AI智能助手，很高兴能帮助您！请问有什么我可以协助您的？",
-  "根据您的问题，我建议您可以尝试以下几种方法解决...",
-  "这个问题比较复杂，我需要思考一下。从专业角度来看，有以下几点需要考虑...",
-  "您好！我可以帮您查询相关信息。根据最新数据显示...",
-  "非常感谢您的提问。这是一个很好的问题，让我为您详细解答...",
-];
-
-// 图片分析的模拟回复
-const imageAnalysisResponses = [
-  "我看到了这张图片，这是一张很有意思的照片。",
-  "根据图片内容，我可以看到这是一张关于...的图片。",
-  "这是一张精美的图片，包含了丰富的视觉元素。",
-  "从这张图片中，我观察到了以下几个重要细节：...",
-];
-
-// Markdown示例回复
-const markdownResponses = [
-  `# Markdown 示例
-
-## 代码示例
-\`\`\`javascript
-function hello() {
-  console.log("Hello, world!");
-  return true;
-}
-\`\`\`
-
-## 表格示例
-| 姓名 | 年龄 | 城市 |
-| ---- | ---- | ---- |
-| 张三 | 25 | 北京 |
-| 李四 | 30 | 上海 |
-| 王五 | 28 | 广州 |
-
-`,
-
-  `## 数据分析报告
-根据您提供的信息，我做了如下分析：
-
-### 主要发现
-1. 数据显示**正向趋势**
-2. 用户增长率达到*15%*
-
-\`\`\`python
-import pandas as pd
-
-def analyze_data(data):
-    return data.describe()
-\`\`\`
-
-### 详细数据
-| 季度 | 收入(万) | 增长率 |
-| ---- | ------- | ----- |
-| Q1   | 120     | 5%    |
-| Q2   | 150     | 25%   |
-| Q3   | 180     | 20%   |
-| Q4   | 210     | 16.7% |
-`,
-];
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_QIANWEN_ACCESS_KEY,
+  baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  dangerouslyAllowBrowser: true,
+});
 
 // In a real app, this would connect to a backend service
 class ChatService {
@@ -106,62 +53,119 @@ class ChatService {
     return false;
   }
 
-  // 发送消息
-  async sendMessage(message: string): Promise<Message> {
-    // 模拟网络延迟 - 随机1-3秒，让体验更真实
-    return new Promise(resolve => {
-      setTimeout(
-        () => {
-          // 随机选择是否返回Markdown格式的回复
-          const useMarkdown = Math.random() > 0.5;
+  // 发送消息（流式输出）
+  async sendMessage(message: string, onChunk?: (chunk: string) => void): Promise<Message> {
+    try {
+      const stream = await openai.chat.completions.create({
+        model: "qwen-vl-max",
+        messages: [
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+        stream: true,
+      });
 
-          if (useMarkdown) {
-            // 使用Markdown回复
-            const randomIndex = Math.floor(Math.random() * markdownResponses.length);
-            const response = markdownResponses[randomIndex];
+      let fullContent = "";
 
-            resolve({
-              content: response,
-              isBot: true,
-              type: "text",
-            });
-          } else {
-            // 使用普通回复
-            const randomIndex = Math.floor(Math.random() * mockResponses.length);
-            const baseResponse = mockResponses[randomIndex];
-
-            resolve({
-              content: `${baseResponse} 您提到的"${message}"是一个很有趣的话题，我们可以进一步探讨。`,
-              isBot: true,
-              type: "text",
-            });
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        if (content) {
+          fullContent += content;
+          // 调用回调函数实现打字机效果
+          if (onChunk) {
+            onChunk(content);
           }
-        },
-        1000 + Math.random() * 2000
-      );
-    });
+        }
+      }
+
+      return {
+        content: fullContent || "抱歉，我无法理解您的问题，请重新描述。",
+        isBot: true,
+        type: "text",
+      };
+    } catch (error) {
+      console.error("OpenAI API调用失败:", error);
+      return {
+        content: "抱歉，服务暂时不可用，请稍后再试。",
+        isBot: true,
+        type: "text",
+      };
+    }
   }
 
   // 发送图片
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async sendImage(_imageFile: File): Promise<Message> {
-    // 这里应该是上传图片的逻辑，返回图片URL
-    // 这里只是模拟
-    return new Promise(resolve => {
-      setTimeout(
-        () => {
-          // 从图片分析回复中随机获取一个
-          const randomIndex = Math.floor(Math.random() * imageAnalysisResponses.length);
-          const response = imageAnalysisResponses[randomIndex];
+  async sendImage(
+    imageFile: File,
+    prompt?: string,
+    onChunk?: (chunk: string) => void
+  ): Promise<Message> {
+    try {
+      // 将图片转换为base64
+      const base64Image = await this.fileToBase64(imageFile);
 
-          resolve({
-            content: response,
-            isBot: true,
-            type: "text",
-          });
-        },
-        2000 + Math.random() * 1000
-      );
+      // 如果没有提供prompt，使用默认的分析要求
+      const analysisPrompt = prompt || "请分析这张图片的内容";
+
+      const stream = await openai.chat.completions.create({
+        model: "qwen-vl-max", // 确保模型支持图片输入
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: analysisPrompt,
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: base64Image,
+                },
+              },
+            ],
+          },
+        ],
+        stream: true,
+      });
+
+      let fullContent = "";
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        if (content) {
+          fullContent += content;
+          if (onChunk) {
+            onChunk(content);
+          }
+        }
+      }
+
+      return {
+        content: fullContent || "抱歉，我无法分析这张图片。",
+        isBot: true,
+        type: "text",
+      };
+    } catch (error) {
+      console.error("图片分析失败:", error);
+      return {
+        content: "抱歉，图片分析服务暂时不可用，请稍后再试。",
+        isBot: true,
+        type: "text",
+      };
+    }
+  }
+
+  // 将文件转换为base64格式
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
   }
 }

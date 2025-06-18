@@ -6,7 +6,7 @@ import "react-image-crop/dist/ReactCrop.css";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
-  onSendImage?: (image: File) => void;
+  onSendImage?: (image: File, prompt?: string) => void;
 }
 
 // 使用接口定义Web Speech API
@@ -63,6 +63,8 @@ declare global {
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendImage }) => {
+  const [previewImageSrc, setPreviewImageSrc] = useState<string | null>(null);
+  const [editedImageFile, setEditedImageFile] = useState<File | null>(null);
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -119,9 +121,18 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendImage 
   }, []);
 
   const handleSend = () => {
-    if (!input.trim()) return;
-    onSendMessage(input);
-    setInput("");
+    if (editedImageFile) {
+      if (onSendImage) {
+        onSendImage(editedImageFile, input || undefined); // 使用 input 作为 prompt
+        setEditedImageFile(null);
+        setPreviewImageSrc(null);
+        setInput("");
+      }
+    } else {
+      if (!input.trim()) return;
+      onSendMessage(input);
+      setInput("");
+    }
   };
 
   const handleImageClick = () => {
@@ -185,14 +196,31 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendImage 
     setSelectedImage(null);
   };
 
+  // Helper function to convert File to Base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
   // 处理图片编辑完成
-  const handleConfirmEdit = (editedImage: File) => {
+  const handleConfirmEdit = async (editedImage: File) => {
     setShowImageEditor(false);
     setSelectedImage(null);
-
-    // 调用父组件回调函数发送编辑后的图片
-    if (onSendImage) {
-      onSendImage(editedImage);
+    setEditedImageFile(editedImage);
+    try {
+      const base64Image = await fileToBase64(editedImage);
+      setPreviewImageSrc(base64Image);
+      // 图片编辑完成后，允许用户在输入框输入针对该图片的文本
+      // setInput(""); // 清空或不清空输入框，根据产品需求决定
+    } catch (error) {
+      console.error("Error converting file to base64:", error);
+      Toast.show({
+        content: "图片预览失败",
+      });
     }
   };
 
@@ -212,6 +240,49 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onSendImage 
         onChange={handleImageChange}
         style={{ display: "none" }}
       />
+      {previewImageSrc && (
+        <div
+          style={{
+            position: "relative",
+            marginRight: "8px",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={previewImageSrc}
+            alt="Preview"
+            style={{ width: "36px", height: "36px", borderRadius: "4px", objectFit: "cover" }}
+          />
+          <Button
+            size="mini"
+            color="danger"
+            fill="outline"
+            onClick={() => {
+              setPreviewImageSrc(null);
+              setEditedImageFile(null);
+              setInput(""); // 清除预览时也清空输入框内容
+            }}
+            style={{
+              position: "absolute",
+              top: "-8px",
+              right: "-8px",
+              borderRadius: "50%",
+              width: "18px",
+              height: "18px",
+              padding: "0",
+              fontSize: "10px",
+              lineHeight: "16px",
+              minWidth: "18px",
+              border: "none",
+              background: "rgba(0,0,0,0.5)",
+              color: "white",
+            }}
+          >
+            X
+          </Button>
+        </div>
+      )}
       <Button
         onClick={handleImageClick}
         style={{

@@ -3,6 +3,8 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import postcssPresetEnv from "postcss-preset-env";
 import stylelint from "vite-plugin-stylelint";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default defineConfig(({ mode }) => {
   console.log(mode);
